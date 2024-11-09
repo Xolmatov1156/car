@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
-  return (
-    <div className='flex justify-center items-center h-screen bg-black text-white text-[100px]'>Home</div>
-  )
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      navigate('/')
+    }
+  }, [navigate])
 }
 
 export default Home

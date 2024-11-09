@@ -1,5 +1,5 @@
+import { ToastContainer } from 'react-toastify'
 import './App.css'
-import Login from './pages/Login/Login'
 import CustomRoutes from './router'
 
 function App() {
@@ -7,6 +7,7 @@ function App() {
   return (
     <>
       <CustomRoutes/>
+      <ToastContainer />
     </>
   )
 }
