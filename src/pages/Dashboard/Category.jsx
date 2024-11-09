@@ -30,8 +30,10 @@ const Category = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setImageSrc(file);
-    setImagePreview(URL.createObjectURL(file));
+    if (file) {
+      setImageSrc(file);
+      setImagePreview(URL.createObjectURL(file)); // Update preview with new file
+    }
   };
 
   const handleAddCategory = (e) => {
@@ -96,7 +98,7 @@ const Category = () => {
     setSelectedCategory(category);
     setNameEn(category.name_en);
     setNameRu(category.name_ru);
-    setImagePreview(category.image_src);
+    setImagePreview(`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${category.image_src}`);
     setShowModal(true);
   };
 
@@ -145,9 +147,9 @@ const Category = () => {
                 />
               </td>
               <td className="flex mt-5 gap-4 ml-4">
-                <img src={Edit} alt="" onClick={() => openEditModal(item)} />
+                <img src={Edit} alt="edit" className="cursor-pointer" onClick={() => openEditModal(item)} />
                 <button onClick={() => handleDelete(item?.id)}>
-                  <img src={Delete} alt="" />
+                  <img src={Delete} alt="edit" />
                 </button>
               </td>
             </tr>
@@ -234,7 +236,7 @@ const Category = () => {
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  {selectedCategory ? "Update Category" : "Add Category"}
+                  {selectedCategory ? "Edit Category" : "Add Category"}
                 </button>
               </div>
             </form>
