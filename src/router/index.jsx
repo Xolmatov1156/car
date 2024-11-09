@@ -4,6 +4,7 @@ import Login from '../pages/Login/Login';
 import Home from '../pages/Dashboard/Home';
 import Category from '../pages/Dashboard/Category';
 import Sidebar from '../components/Sidebar';
+import Brand from '../pages/Dashboard/Brand';
 
 const CustomRoutes = () => {
   const location = useLocation();
@@ -15,6 +16,7 @@ const CustomRoutes = () => {
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/category" element={<Category />} />
+        <Route path='/brand' element={<Brand />} />
       </Routes>
     </div>
   );

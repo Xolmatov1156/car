@@ -32,7 +32,7 @@ const Category = () => {
     const file = e.target.files[0];
     if (file) {
       setImageSrc(file);
-      setImagePreview(URL.createObjectURL(file)); // Update preview with new file
+      setImagePreview(URL.createObjectURL(file)); 
     }
   };
 

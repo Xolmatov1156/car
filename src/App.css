@@ -7,3 +7,8 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.active {
+  background-color: #3C82F6;
+}
+
