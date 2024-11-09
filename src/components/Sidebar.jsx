@@ -5,6 +5,7 @@ import Home from '../assets/home.svg'
 import BrandIcon from '../assets/brand.svg'
 
 const Sidebar = () => {
+  
   return (
     <div className='w-[250px] h-screen bg-gray-900'>
       <div className="text-white flex justify-center pt-8 text-3xl font-semibold">

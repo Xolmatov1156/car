@@ -62,6 +62,26 @@ const Category = () => {
         }
       });
   };
+  const handleDelete = (categoryId) => {
+    const tokenbek = localStorage.getItem("token");
+  
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories/${categoryId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${tokenbek}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (res?.success) {
+          toast.success(res?.message);
+          getCategory();
+        } else {
+          toast.error(res?.message);
+        }
+      });
+  };
+  
 
   const handleEditCategory = (e) => {
     e.preventDefault();
