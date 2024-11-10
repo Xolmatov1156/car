@@ -57,11 +57,13 @@ const Category = () => {
           getCategory();
           setShowModal(false);
           setImagePreview(null);
+          resetForm();
         } else {
           toast.error(res?.message);
         }
       });
   };
+
   const handleDelete = (categoryId) => {
     const tokenbek = localStorage.getItem("token");
   
@@ -81,10 +83,10 @@ const Category = () => {
         }
       });
   };
-  
 
   const handleEditCategory = (e) => {
     e.preventDefault();
+    e.target.reset();
     const formdata = new FormData();
     formdata.append("name_en", selectedCategory.name_en);
     formdata.append("name_ru", selectedCategory.name_ru);
@@ -108,6 +110,7 @@ const Category = () => {
           setShowModal(false);
           setSelectedCategory(null);
           setImagePreview(null);
+          resetForm();
         } else {
           toast.error(res?.message);
         }
@@ -122,6 +125,13 @@ const Category = () => {
     setShowModal(true);
   };
 
+  const resetForm = () => {
+    setNameEn("");
+    setNameRu("");
+    setImageSrc("");
+    setImagePreview(null);
+  };
+
   return (
     <div className="w-[80%] mx-auto mt-10">
       <div className="flex justify-between px-4">
@@ -130,7 +140,7 @@ const Category = () => {
           onClick={() => {
             setShowModal(true);
             setSelectedCategory(null);
-            setImagePreview(null);
+            resetForm();
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
         >
@@ -163,7 +173,7 @@ const Category = () => {
                 <img
                   src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${item?.image_src}`}
                   alt={item?.name_en}
-                  className="w-16 h-16 rounded-md object-cover"
+                  className="w-16 h-16 rounded-md object-contain"
                 />
               </td>
               <td className="flex mt-5 gap-4 ml-4">
@@ -232,31 +242,27 @@ const Category = () => {
                   {imagePreview ? (
                     <img
                       src={imagePreview}
-                      alt="Preview"
-                      className="mt-2 w-32 h-32 object-cover rounded-md"
+                      alt="image preview"
+                      className="w-32 h-32 mt-2 object-contain"
                     />
                   ) : (
-                    <img src={AddImg} alt="" className="w-[70px]" />
+                    <img src={AddImg} alt="add" className="w-16 mt-2" />
                   )}
                 </label>
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-between mt-6">
                 <button
                   type="button"
-                  className="bg-red-500 text-white px-4 py-2 rounded mr-2"
-                  onClick={() => {
-                    setShowModal(false);
-                    setSelectedCategory(null);
-                    setImagePreview(null);
-                  }}
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-white bg-red-500 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                  className="px-4 py-2 bg-blue-500 text-white rounded"
                 >
-                  {selectedCategory ? "Edit Category" : "Add Category"}
+                  {selectedCategory ? "Update" : "Add"}
                 </button>
               </div>
             </form>
