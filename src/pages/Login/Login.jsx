@@ -20,7 +20,7 @@ const Login = () => {
       .then((response) => {
         toast.success(response?.data?.message);
         e.target.reset();
-        navigate("/home");
+        navigate("/category");
         localStorage.setItem("token", response?.data?.data?.tokens?.accessToken?.token);
       })
       .catch((err) => {

@@ -10,6 +10,10 @@ const Brand = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [title, setTitle] = useState("");
+  const [newTitle, setNewTitle] = useState("");
+  const [imageSrc, setImageSrc] = useState("");
+  const token = localStorage.getItem("token");
 
   function getBrand() {
     useAxios()
@@ -22,10 +26,6 @@ const Brand = () => {
   useEffect(() => {
     getBrand();
   }, []);
-
-  const [title, setTitle] = useState("");
-  const [imageSrc, setImageSrc] = useState("");
-  const token = localStorage.getItem("token");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -83,7 +83,7 @@ const Brand = () => {
   const handleEditBrand = (e) => {
     e.preventDefault();
     const formdata = new FormData();
-    formdata.append("title", selectedBrand.title);
+    formdata.append("title", newTitle); 
     if (imageSrc) formdata.append("images", imageSrc);
 
     fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/brands/${selectedBrand.id}`, {
@@ -110,13 +110,14 @@ const Brand = () => {
 
   const openEditModal = (brand) => {
     setSelectedBrand(brand);
-    setTitle(brand.title);
+    setNewTitle(brand.title); 
     setImagePreview(`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${brand.image_src}`);
     setShowModal(true);
   };
 
   const resetForm = () => {
     setTitle("");
+    setNewTitle("");
     setImageSrc("");
     setImagePreview(null);
   };
@@ -140,7 +141,7 @@ const Brand = () => {
       <table className="min-w-full bg-white border border-gray-200 shadow-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-left">Title</th>
+            <th className="py-3 px-6 text-left">Name</th>
             <th className="py-3 px-6 text-left">Image</th>
             <th className="py-3 px-6 text-left">Action</th>
           </tr>
@@ -175,16 +176,12 @@ const Brand = () => {
             </h2>
             <form onSubmit={selectedBrand ? handleEditBrand : handleAddBrand}>
               <div className="mb-4">
-                <label className="block text-gray-700">Title</label>
+                <label className="block text-gray-700">Name</label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 p-2 rounded"
-                  value={selectedBrand?.title || title}
-                  onChange={(e) =>
-                    selectedBrand
-                      ? setSelectedBrand({ ...selectedBrand, title: e.target.value })
-                      : setTitle(e.target.value)
-                  }
+                  value={selectedBrand ? newTitle : title}
+                  onChange={(e) => (selectedBrand ? setNewTitle(e.target.value) : setTitle(e.target.value))}
                 />
               </div>
               <div className="mb-4">
