@@ -4,6 +4,8 @@ import Delete from "../../assets/delete.svg";
 import Edit from "../../assets/edit.svg";
 import { toast } from "react-toastify";
 import AddImg from "../../assets/add.png";
+import Search from '../../assets/search.svg';
+import useDebounce from "../../hook/useBebounce";
 
 const Brand = () => {
   const [data, setData] = useState([]);
@@ -13,7 +15,9 @@ const Brand = () => {
   const [title, setTitle] = useState("");
   const [newTitle, setNewTitle] = useState("");
   const [imageSrc, setImageSrc] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const token = localStorage.getItem("token");
+  const debouncedSearchTerm = useDebounce(searchTerm, 900);
 
   function getBrand() {
     useAxios()
@@ -83,7 +87,7 @@ const Brand = () => {
   const handleEditBrand = (e) => {
     e.preventDefault();
     const formdata = new FormData();
-    formdata.append("title", newTitle); 
+    formdata.append("title", newTitle);
     if (imageSrc) formdata.append("images", imageSrc);
 
     fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/brands/${selectedBrand.id}`, {
@@ -110,8 +114,10 @@ const Brand = () => {
 
   const openEditModal = (brand) => {
     setSelectedBrand(brand);
-    setNewTitle(brand.title); 
-    setImagePreview(`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${brand.image_src}`);
+    setNewTitle(brand.title);
+    setImagePreview(
+      `https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${brand.image_src}`
+    );
     setShowModal(true);
   };
 
@@ -122,10 +128,24 @@ const Brand = () => {
     setImagePreview(null);
   };
 
+  const filteredData = data.filter((item) =>
+    item.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+  );
+
   return (
     <div className="w-[80%] mx-auto mt-10">
       <div className="flex justify-between px-4">
         <h1 className="text-3xl font-semibold mb-4">Brand</h1>
+        <label className="flex relative">
+          <input
+            type="text"
+            className="border border-gray-400 pr-8 pl-3 h-[40px] w-[200px] lg:w-[300px] rounded-lg outline-none"
+            placeholder="Search Brand"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <img src={Search} alt="search" className="w-[22px] h-[22px] absolute right-1 top-2.5"/>
+        </label>
         <button
           onClick={() => {
             setShowModal(true);
@@ -141,14 +161,17 @@ const Brand = () => {
       <table className="min-w-full bg-white border border-gray-200 shadow-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-left">Name</th>
+            <th className="py-3 px-6 text-left">Title</th>
             <th className="py-3 px-6 text-left">Image</th>
             <th className="py-3 px-6 text-left">Action</th>
           </tr>
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
-          {data?.map((item, index) => (
-            <tr key={index} className="border-b border-gray-200 hover:bg-gray-100 transition duration-200">
+          {filteredData?.map((item, index) => (
+            <tr
+              key={index}
+              className="border-b border-gray-200 hover:bg-gray-100 transition duration-200"
+            >
               <td className="py-3 px-6 text-left whitespace-nowrap">{item?.title}</td>
               <td className="py-3 px-6 text-left">
                 <img
@@ -158,8 +181,10 @@ const Brand = () => {
                 />
               </td>
               <td className="flex mt-5 gap-4 ml-4">
-                <img src={Edit} alt="edit" className="cursor-pointer" onClick={() => openEditModal(item)} />
-                <button onClick={() => handleDelete(item?.id)}>
+                <button onClick={() => openEditModal(item)} className="bg-blue-500 p-1 rounded-lg">
+                  <img src={Edit} alt="edit"/>
+                </button>
+                <button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDelete(item?.id)}>
                   <img src={Delete} alt="delete" />
                 </button>
               </td>
@@ -176,12 +201,14 @@ const Brand = () => {
             </h2>
             <form onSubmit={selectedBrand ? handleEditBrand : handleAddBrand}>
               <div className="mb-4">
-                <label className="block text-gray-700">Name</label>
+                <label className="block text-gray-700">Title</label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 p-2 rounded"
                   value={selectedBrand ? newTitle : title}
-                  onChange={(e) => (selectedBrand ? setNewTitle(e.target.value) : setTitle(e.target.value))}
+                  onChange={(e) =>
+                    selectedBrand ? setNewTitle(e.target.value) : setTitle(e.target.value)
+                  }
                 />
               </div>
               <div className="mb-4">
@@ -193,27 +220,21 @@ const Brand = () => {
                     className="hidden"
                     onChange={handleImageChange}
                   />
-                  {imagePreview ? (
-                    <img
-                      src={imagePreview}
-                      alt="image preview"
-                      className="w-32 h-32 mt-2 object-contain"
-                    />
-                  ) : (
-                    <img src={AddImg} alt="add" className="w-16 mt-2" />
-                  )}
                 </label>
+                <div className="relative h-[180px] w-[100%] mx-auto border-2 border-dashed flex justify-center items-center cursor-pointer">
+                  <img src={AddImg} alt="add"/>
+                </div>
               </div>
-              <div className="flex justify-between mt-6">
+              <div className="flex justify-between mt-5">
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+                  {selectedBrand ? "Update" : "Add"}
+                </button>
                 <button
-                  type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-white bg-red-500 rounded"
+                  type="button"
+                  className="bg-gray-500 text-white py-2 px-4 rounded"
                 >
                   Cancel
-                </button>
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
-                  {selectedBrand ? "Update" : "Add"}
                 </button>
               </div>
             </form>

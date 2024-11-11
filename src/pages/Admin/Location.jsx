@@ -5,29 +5,45 @@ import Edit from "../../assets/edit.svg";
 import { toast } from "react-toastify";
 import AddImg from "../../assets/add.png";
 
-const Category = () => {
+const Location = () => {
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-
-  const [newNameEn, setNewNameEn] = useState("");
-  const [newNameRu, setNewNameRu] = useState("");
-
+  const [name, setName] = useState("");
+  const [text, setText] = useState("");
+  const [newText, setNewText] = useState("");
+  const [newName, setNewName] = useState("");
   const [imageSrc, setImageSrc] = useState("");
-  const tokenbek = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-  function getCategory() {
-    useAxios()
-      .get("/api/categories")
-      .then((response) => {
-        setData(response?.data?.data);
-      });
-  }
+  const getLocations = () => {
+    if (token) {
+      useAxios()
+        .get("/api/locations", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response?.data?.data) {
+            setData(response.data.data);
+          } else {
+            toast.error("Failed to fetch locations.");
+          }
+        })
+        .catch(() => {
+          toast.error("Error fetching locations.");
+        });
+    } else {
+      toast.error("Authorization token is missing.");
+    }
+  };
+  
 
   useEffect(() => {
-    getCategory();
-  }, []);
+    getLocations();
+  }, [token]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -37,17 +53,17 @@ const Category = () => {
     }
   };
 
-  const handleAddCategory = (e) => {
+  const handleAddLocation = (e) => {
     e.preventDefault();
     const formdata = new FormData();
-    formdata.append("name_en", newNameEn);
-    formdata.append("name_ru", newNameRu);
+    formdata.append("name", name);
     formdata.append("images", imageSrc);
+    formdata.append("text", text);
 
-    fetch("https://autoapi.dezinfeksiyatashkent.uz/api/categories", {
+    fetch("https://autoapi.dezinfeksiyatashkent.uz/api/locations", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${tokenbek}`,
+        Authorization: `Bearer ${token}`,
       },
       body: formdata,
     })
@@ -55,79 +71,84 @@ const Category = () => {
       .then((res) => {
         if (res?.success) {
           toast.success(res?.message);
-          getCategory();
+          getLocations();
           setShowModal(false);
           setImagePreview(null);
           resetForm();
         } else {
           toast.error(res?.message);
         }
+      })
+      .catch(() => {
+        toast.error("Error adding location.");
       });
   };
 
-  const handleDelete = (categoryId) => {
-    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories/${categoryId}`, {
+  const handleDelete = (locationId) => {
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations/${locationId}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${tokenbek}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => response.json())
       .then((res) => {
         if (res?.success) {
           toast.success(res?.message);
-          getCategory();
+          getLocations();
         } else {
           toast.error(res?.message);
         }
+      })
+      .catch(() => {
+        toast.error("Error deleting location.");
       });
   };
 
-  const handleEditCategory = (e) => {
+  const handleEditLocation = (e) => {
     e.preventDefault();
     const formdata = new FormData();
-    formdata.append("name_en", newNameEn); 
-    formdata.append("name_ru", newNameRu); 
+    formdata.append("name", newName);
     if (imageSrc) formdata.append("images", imageSrc);
 
-    fetch(
-      `https://autoapi.dezinfeksiyatashkent.uz/api/categories/${selectedCategory.id}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${tokenbek}`,
-        },
-        body: formdata,
-      }
-    )
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations/${selectedLocation.id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formdata,
+    })
       .then((response) => response.json())
       .then((res) => {
         if (res?.success) {
           toast.success(res?.message);
-          getCategory();
+          getLocations();
           setShowModal(false);
-          setSelectedCategory(null);
+          setSelectedLocation(null);
           setImagePreview(null);
           resetForm();
         } else {
           toast.error(res?.message);
         }
+      })
+      .catch(() => {
+        toast.error("Error editing location.");
       });
   };
 
-  const openEditModal = (category) => {
-    setSelectedCategory(category);
-    setNewNameEn(category.name_en);
-    setNewNameRu(category.name_ru);
-    setImagePreview(
-      `https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${category.image_src}`
-    );
+  const openEditModal = (location) => {
+    setSelectedLocation(location);
+    setNewName(location.name);
+    setNewText(location.text);
+    setImagePreview(`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${location.image_src}`);
     setShowModal(true);
   };
 
   const resetForm = () => {
-    setNewNameEn("");
-    setNewNameRu("");
+    setName("");
+    setNewName("");
+    setText("");
+    setNewText("");
     setImageSrc("");
     setImagePreview(null);
   };
@@ -135,51 +156,46 @@ const Category = () => {
   return (
     <div className="w-[80%] mx-auto mt-10">
       <div className="flex justify-between px-4">
-        <h1 className="text-3xl font-semibold mb-4">Category</h1>
+        <h1 className="text-3xl font-semibold mb-4">Location</h1>
         <button
           onClick={() => {
             setShowModal(true);
-            setSelectedCategory(null);
+            setSelectedLocation(null);
             resetForm();
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
         >
-          Add Category
+          Add Location
         </button>
       </div>
 
       <table className="min-w-full bg-white border border-gray-200 shadow-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-left">Name (EN)</th>
-            <th className="py-3 px-6 text-left">Name (RU)</th>
+            <th className="py-3 px-6 text-left">Name</th>
+            <th className="py-3 px-6 text-left">Text</th>
             <th className="py-3 px-6 text-left">Image</th>
             <th className="py-3 px-6 text-left">Action</th>
           </tr>
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
           {data?.map((item, index) => (
-            <tr
-              key={index}
-              className="border-b border-gray-200 hover:bg-gray-100 transition duration-200"
-            >
-              <td className="py-3 px-6 text-left whitespace-nowrap">
-                {item?.name_en}
-              </td>
-              <td className="py-3 px-6 text-left whitespace-nowrap">
-                {item?.name_ru}
-              </td>
+            <tr key={index} className="border-b border-gray-200 hover:bg-gray-100 transition duration-200">
+              <td className="py-3 px-6 text-left whitespace-nowrap">{item?.name}</td>
+              <td>{item?.text}</td>
               <td className="py-3 px-6 text-left">
                 <img
                   src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${item?.image_src}`}
-                  alt={item?.name_en}
+                  alt={item?.name}
                   className="w-16 h-16 rounded-md object-contain"
                 />
               </td>
               <td className="flex mt-5 gap-4 ml-4">
-                <img src={Edit} alt="edit" className="cursor-pointer" onClick={() => openEditModal(item)} />
-                <button onClick={() => handleDelete(item?.id)}>
-                  <img src={Delete} alt="edit" />
+              <button  onClick={() => openEditModal(item)}  className="bg-blue-500 p-1 rounded-lg">
+                <img src={Edit} alt="edit"/>
+                </button>
+                <button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDelete(item?.id)}>
+                  <img src={Delete} alt="delete" />
                 </button>
               </td>
             </tr>
@@ -191,27 +207,23 @@ const Category = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-[90%] sm:w-[400px]">
             <h2 className="text-xl font-semibold mb-4">
-              {selectedCategory ? "Edit Category" : "Add New Category"}
+              {selectedLocation ? "Edit Location" : "Add New Location"}
             </h2>
-            <form
-              onSubmit={selectedCategory ? handleEditCategory : handleAddCategory}
-            >
+            <form onSubmit={selectedLocation ? handleEditLocation : handleAddLocation}>
               <div className="mb-4">
-                <label className="block text-gray-700">Name (EN)</label>
+                <label className="block text-gray-700">Name</label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 p-2 rounded"
-                  value={newNameEn}
-                  onChange={(e) => setNewNameEn(e.target.value)}
+                  value={selectedLocation ? newName : name}
+                  onChange={(e) => (selectedLocation ? setNewName(e.target.value) : setName(e.target.value))}
                 />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700">Name (RU)</label>
+                <label className="block text-gray-700 mt-2">Text</label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 p-2 rounded"
-                  value={newNameRu}
-                  onChange={(e) => setNewNameRu(e.target.value)}
+                  className="w-full border border-gray-300 p-2 rounded "
+                  value={selectedLocation ? newText : text}
+                  onChange={(e) => (selectedLocation ? setNewText(e.target.value) : setText(e.target.value))}
                 />
               </div>
               <div className="mb-4">
@@ -238,15 +250,12 @@ const Category = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="bg-red-500 text-white py-2 px-4 rounded"
+                  className="px-4 py-2 text-white bg-red-500 rounded"
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white py-2 px-4 rounded"
-                >
-                  {selectedCategory ? "Save Changes" : "Add Category"}
+                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
+                  {selectedLocation ? "Update" : "Add"}
                 </button>
               </div>
             </form>
@@ -257,4 +266,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Location;

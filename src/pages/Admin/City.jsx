@@ -4,6 +4,8 @@ import Delete from "../../assets/delete.svg";
 import Edit from "../../assets/edit.svg";
 import { toast } from "react-toastify";
 import AddImg from "../../assets/add.png";
+import useDebounce from "../../hook/useBebounce";
+import Search from '../../assets/search.svg';
 
 const City = () => {
   const [data, setData] = useState([]);
@@ -16,6 +18,9 @@ const City = () => {
   const [newName, setNewName] = useState("");
   const [imageSrc, setImageSrc] = useState("");
   const token = localStorage.getItem("token");
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 900);
+
 
   const getCities = () => {
     if (token) {
@@ -153,11 +158,24 @@ const City = () => {
     setImageSrc("");
     setImagePreview(null);
   };
+  const filteredData = data.filter((item) =>
+    item?.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+  );
 
   return (
     <div className="w-[80%] mx-auto mt-10">
       <div className="flex justify-between px-4">
         <h1 className="text-3xl font-semibold mb-4">City</h1>
+        <label className="flex relative">
+          <input
+            type="text"
+            className="border border-gray-400 pr-8 pl-3 h-[40px] w-[200px] lg:w-[300px] rounded-lg outline-none"
+            placeholder="Search Brand"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <img src={Search} alt="search" className="w-[22px] h-[22px] absolute right-1 top-2.5"/>
+        </label>
         <button
           onClick={() => {
             setShowModal(true);
@@ -177,10 +195,10 @@ const City = () => {
             <th className="py-3 px-6 text-left">Text</th>
             <th className="py-3 px-6 text-left">Image</th>
             <th className="py-3 px-6 text-left">Action</th>
-          </tr>
+          </tr> 
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
-          {data?.map((item, index) => (
+          {filteredData?.map((item, index) => (
             <tr key={index} className="border-b border-gray-200 hover:bg-gray-100 transition duration-200">
               <td className="py-3 px-6 text-left whitespace-nowrap">{item?.name}</td>
               <td>{item?.text}</td>
@@ -192,8 +210,10 @@ const City = () => {
                 />
               </td>
               <td className="flex mt-5 gap-4 ml-4">
-                <img src={Edit} alt="edit" className="cursor-pointer" onClick={() => openEditModal(item)} />
-                <button onClick={() => handleDelete(item?.id)}>
+              <button  onClick={() => openEditModal(item)}  className="bg-blue-500 p-1 rounded-lg">
+                <img src={Edit} alt="edit"/>
+                </button>
+                <button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDelete(item?.id)}>
                   <img src={Delete} alt="delete" />
                 </button>
               </td>

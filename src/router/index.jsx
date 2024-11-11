@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Login from '../pages/Login/Login';
-// import Home from '../pages/Dashboard/Home';
-import Category from '../pages/Dashboard/Category';
+import Category from '../pages/Admin/Category';
 import Sidebar from '../components/Sidebar';
-import Brand from '../pages/Dashboard/Brand';
-import City from '../pages/Dashboard/City';
+import Brand from '../pages/Admin/Brand';
+import City from '../pages/Admin/City';
+import Location from '../pages/Admin/Location';
+import Car from '../pages/Admin/Car';
+import Model from '../pages/Admin/Model';
 
 const CustomRoutes = () => {
   const location = useLocation();
@@ -23,10 +25,12 @@ const CustomRoutes = () => {
       {location.pathname !== '/' && <Sidebar />}
       <Routes>
         <Route path="/" element={<Login />} />
-        {/* <Route path="/home" element={<Home />} /> */}
         <Route path="/category" element={<Category />} />
         <Route path='/brand' element={<Brand />} />
         <Route path='/city' element={<City/>} />
+        <Route path='/location' element={<Location/>} />
+        <Route path='/car' element={<Car/>} />
+        <Route path='/model' element={<Model/>} />
       </Routes>
     </div>
   );
