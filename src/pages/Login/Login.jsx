@@ -43,6 +43,7 @@ const Login = () => {
               onChange={(e) => setNumber(e.target.value)}
               type="number"
               value={number}
+              minLength={3}
               placeholder="Number"
               aria-label="Phone Number"
               required
@@ -54,6 +55,7 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               type="password"
               value={password}
+              minLength={3}
               placeholder="Password"
               aria-label="Password"
               required
