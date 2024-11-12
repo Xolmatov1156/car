@@ -139,7 +139,7 @@ const Brand = () => {
         <label className="flex relative">
           <input
             type="text"
-            className="border border-gray-400 pr-8 pl-3 h-[40px] w-[200px] lg:w-[300px] rounded-lg outline-none"
+            className="border -z-10 border-gray-400 pr-8 pl-3 h-[40px] w-[200px] lg:w-[300px] rounded-lg outline-none"
             placeholder="Search Brand"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
