@@ -5,7 +5,7 @@ import Edit from "../../assets/edit.svg";
 import { toast } from "react-toastify";
 import AddImg from "../../assets/add.png";
 import Search from '../../assets/search.svg';
-import useDebounce from "../../hook/useBebounce";
+import useDebounce from "../../hook/useDebounce";
 
 const Brand = () => {
   const [data, setData] = useState([]);
@@ -212,7 +212,7 @@ const Brand = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">
+              <label className="block text-gray-700">
                   Image
                   <input
                     accept="image/png, image/jpeg"
@@ -220,21 +220,27 @@ const Brand = () => {
                     className="hidden"
                     onChange={handleImageChange}
                   />
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="image preview"
+                      className="w-32 h-32 mt-2 object-contain"
+                    />
+                  ) : (
+                    <img src={AddImg} alt="add" className="w-16 mt-2" />
+                  )}
                 </label>
-                <div className="relative h-[180px] w-[100%] mx-auto border-2 border-dashed flex justify-center items-center cursor-pointer">
-                  <img src={AddImg} alt="add"/>
-                </div>
               </div>
               <div className="flex justify-between mt-5">
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
-                  {selectedBrand ? "Update" : "Add"}
-                </button>
                 <button
                   onClick={() => setShowModal(false)}
                   type="button"
                   className="bg-gray-500 text-white py-2 px-4 rounded"
                 >
                   Cancel
+                </button>
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+                  {selectedBrand ? "Update" : "Add"}
                 </button>
               </div>
             </form>

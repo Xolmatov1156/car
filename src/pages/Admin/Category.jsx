@@ -5,12 +5,14 @@ import Edit from "../../assets/edit.svg";
 import { toast } from "react-toastify";
 import AddImg from "../../assets/add.png";
 import Search from '../../assets/search.svg';
-import useDebounce from "../../hook/useBebounce";
+import useDebounce from "../../hook/useDebounce";
 
 const Category = () => {
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [newNameEn, setNewNameEn] = useState("");
   const [newNameRu, setNewNameRu] = useState("");
@@ -67,8 +69,8 @@ const Category = () => {
       });
   };
 
-  const handleDelete = (categoryId) => {
-    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories/${categoryId}`, {
+  const confirmDelete = () => {
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories/${categoryToDelete.id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${tokenbek}`,
@@ -79,10 +81,17 @@ const Category = () => {
         if (res?.success) {
           toast.success(res?.message);
           getCategory();
+          setShowDeleteModal(false);
+          setCategoryToDelete(null);
         } else {
           toast.error(res?.message);
         }
       });
+  };
+
+  const handleDelete = (category) => {
+    setCategoryToDelete(category);
+    setShowDeleteModal(true);
   };
 
   const handleEditCategory = (e) => {
@@ -145,7 +154,7 @@ const Category = () => {
         <label className="flex relative">
           <input
             type="text"
-            className="border border-gray-400 pr-8 pl-3 h-[40px] w-[200px] lg:w-[300px] rounded-lg outline-none"
+            className="border border-gray-400 pr-8 pl-3 h-[40px] w-[200px] lg:w-[300px] rounded-lg outline-none -z-10"
             placeholder="Search Category"
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -196,7 +205,7 @@ const Category = () => {
                 <button onClick={() => openEditModal(item)} className="bg-blue-500 p-1 rounded-lg">
                   <img src={Edit} alt="edit"/>
                 </button>
-                <button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDelete(item?.id)}>
+                <button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDelete(item)}>
                   <img src={Delete} alt="delete" />
                 </button>
               </td>
@@ -231,7 +240,7 @@ const Category = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">
+              <label className="block text-gray-700">
                   Image
                   <input
                     accept="image/png, image/jpeg"
@@ -239,15 +248,18 @@ const Category = () => {
                     className="hidden"
                     onChange={handleImageChange}
                   />
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="image preview"
+                      className="w-32 h-32 mt-2 object-contain"
+                    />
+                  ) : (
+                    <img src={AddImg} alt="add" className="w-16 mt-2" />
+                  )}
                 </label>
-                <div className="relative h-[180px] w-[100%] mx-auto border-2 border-dashed flex justify-center items-center cursor-pointer">
-                  <img src={AddImg} alt="add"/>
-                </div>
               </div>
               <div className="flex justify-between mt-5">
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
-                  {selectedCategory ? "Update" : "Add"}
-                </button>
                 <button
                   onClick={() => setShowModal(false)}
                   type="button"
@@ -255,8 +267,34 @@ const Category = () => {
                 >
                   Cancel
                 </button>
+                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+                  {selectedCategory ? "Update" : "Add"}
+                </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-[90%] sm:w-[400px]">
+            <h2 className="text-xl font-semibold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this category?</p>
+            <div className="flex justify-end gap-4 mt-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       )}
