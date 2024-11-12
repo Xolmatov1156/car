@@ -29,6 +29,7 @@ const Model = () => {
   useEffect(() => {
     getModel();
   }, []);
+  
   function getBrand() {
     useAxios()
       .get("/api/brands")
@@ -39,17 +40,6 @@ const Model = () => {
 
   useEffect(() => {
     getBrand();
-  }, []);
-  function getModel() {
-    useAxios()
-      .get("/api/models")
-      .then((response) => {
-        setData(response?.data?.data);
-      });
-  }
-
-  useEffect(() => {
-    getModel();
   }, []);
 
   const handleAddModel = (e) => {
@@ -100,6 +90,7 @@ const Model = () => {
     e.preventDefault();
     const formdata = new FormData();
     formdata.append("name", newName);
+    formdata.append("brand_id", brandId); 
 
     fetch(
       `https://autoapi.dezinfeksiyatashkent.uz/api/models/${selectedModel.id}`,
@@ -128,9 +119,9 @@ const Model = () => {
   const openEditModal = (model) => {
     setSelectedModel(model);
     setNewName(model.name);
+    setBrandId(model.brand_id);
     setShowModal(true);
   };
-  console.log(brandId);
 
   const resetForm = () => {
     setName("");
@@ -230,25 +221,21 @@ const Model = () => {
                   }
                 />
 
-                {selectedModel === null && (
-                  <>
-                    <label className="mt-3 block">Brand</label>
-                    <select
-                      value={brandId}
-                      onChange={(e) => setBrandId(e.target.value)}
-                      className="w-full border border-gray-300 p-2 rounded"
-                    >
-                      <option value="" disabled>
-                        Select a Brand
-                      </option>
-                      {brand?.map((item, index) => (
-                        <option key={index} value={item.id}>
-                          {item.title}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                )}
+                <label className="mt-3 block">Brand</label>
+                <select
+                  value={brandId}
+                  onChange={(e) => setBrandId(e.target.value)}
+                  className="w-full border border-gray-300 p-2 rounded"
+                >
+                  <option value="" disabled>
+                    Select a Brand
+                  </option>
+                  {brand?.map((item, index) => (
+                    <option key={index} value={item.id}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex justify-between mt-5">
                 <button
