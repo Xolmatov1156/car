@@ -92,6 +92,7 @@ const Category = () => {
   const handleDelete = (category) => {
     setCategoryToDelete(category);
     setShowDeleteModal(true);
+    toast.success("Deleted successfully")
   };
 
   const handleEditCategory = (e) => {
