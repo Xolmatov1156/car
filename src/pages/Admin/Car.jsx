@@ -23,6 +23,26 @@ const Car = () => {
   const [locationId, setLocationId] = useState("");
   const [category, setCategory] = useState([]);
   const [categoryId, setCategoryId] = useState("");
+  const [color, setColor] = useState("");
+  const [year, setYear] = useState("");
+  const [seconds, setSeconds] = useState("");
+  const [maxspeed, setMaxspeed] = useState("");
+  const [maxpeople, setMaxpeople] = useState("");
+  const [transmission, setTransmission] = useState("");
+  const [motor, setMotor] = useState("")
+  const [driveside, setDriveside] = useState("")
+  const [petrol, setPetrol] = useState("")
+  const [limitperday, setLimitperday] = useState("")
+  const [deposit, setDeposit] = useState("")
+  const [premiumprotection, setPremiumprotection] = useState("")
+  const [priceinaed, setPriceinaed] = useState("")
+  const [priceinaedsale, setPriceinaedsale] = useState("")
+  const [priceinusdsale, setPriceinusdsale] = useState("")
+  const [cover, setCover] = useState("")
+  const [images, setImages] = useState("")
+  const [images2, setImages2] = useState("")
+  const [inclusive, setInclusive] = useState(Boolean)
+
 
   function getCar() {
     useAxios()
@@ -32,9 +52,7 @@ const Car = () => {
       });
   }
 
-  useEffect(() => {
-    getCar();
-  }, []);
+  
   function getBrand() {
     useAxios()
       .get("/api/brands")
@@ -43,9 +61,6 @@ const Car = () => {
       });
   }
 
-  useEffect(() => {
-    getBrand();
-  }, []);
   function getModel() {
     useAxios()
       .get("/api/models")
@@ -54,9 +69,7 @@ const Car = () => {
       });
   }
 
-  useEffect(() => {
-    getModel();
-  }, []);
+  
   function getCity() {
     useAxios()
       .get("/api/cities")
@@ -65,9 +78,6 @@ const Car = () => {
       });
   }
 
-  useEffect(() => {
-    getCity();
-  }, []);
   function getLocation() {
     useAxios()
       .get("/api/locations")
@@ -84,6 +94,10 @@ const Car = () => {
   }
 
   useEffect(() => {
+    getBrand();
+    getModel();
+    getCity();
+    getCar();
     getLocation();
     getCategory();
   }, []);
@@ -109,7 +123,6 @@ const Car = () => {
         }
       });
   };
-  console.log(data);
   
 
   const handleEditCar = (e) => {
